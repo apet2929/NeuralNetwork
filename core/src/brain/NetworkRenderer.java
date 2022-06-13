@@ -62,22 +62,23 @@ public class NetworkRenderer {
         int index = 0;
         int hiddenStartIndex = network.input.cols * network.input.rows;
         int outputStartIndex = hiddenStartIndex + (network.hidden.rows * network.hidden.cols);
+        sr.setColor(0,0,0,1);
         for (int i = 0; i < network.input.rows; i++) {
             drawNodesLines(index, network.input.cols * network.input.rows, network.hidden);
             index++;
         }
-
         for (int i = 0; i < network.hidden.rows; i++) {
             drawNodesLines(index, outputStartIndex, network.output);
             index++;
         }
+
     }
 
     private void drawNodesLines(int nodeIndex, int targetStartIndex, Matrix target){
         sr.setColor(0,0,0,1);
         List<Double> mNodes = target.toArray();
         for (int i = 0; i < mNodes.size(); i++) {
-            sr.line(nodes.get(nodeIndex), nodes.get(targetStartIndex + i));
+            sr.rectLine(nodes.get(nodeIndex), nodes.get(targetStartIndex + i), 1);
         }
     }
 

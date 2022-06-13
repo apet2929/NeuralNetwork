@@ -17,6 +17,10 @@ public class NeuralNetwork {
     public final double l_rate = 0.01;
 
     public NeuralNetwork(int i, int h, int o){
+        input = new Matrix(i, 1);
+        hidden = new Matrix(h, 1);
+        output = new Matrix(o, 1);
+
         weights_ih = new Matrix(h, i);
         weights_ho = new Matrix(o, h);
 
