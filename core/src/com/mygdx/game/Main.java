@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.state.GameStateManager;
 import com.mygdx.game.state.NetworkState;
 import com.mygdx.game.state.TestState1;
+import com.mygdx.game.state.snake.SnakeGameState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,7 @@ public class Main extends ApplicationAdapter {
 	public void create () {
 		gsm = new GameStateManager();
 		gsm.put("net", new NetworkState());
-		gsm.put("game", new TestState1());
+		gsm.put("game", new SnakeGameState());
 	}
 
 	@Override
