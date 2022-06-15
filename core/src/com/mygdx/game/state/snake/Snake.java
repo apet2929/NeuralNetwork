@@ -19,7 +19,7 @@ public class Snake {
 
     HashMap<String, Texture> textures;
 
-    public Snake(){
+    public Snake() {
         length = 5;
         body = new Stack<>();
 
@@ -38,6 +38,7 @@ public class Snake {
 //        if(this.direction != nextDirection){
 //            this.direction = nextDirection;
 //        }
+
         body.push(getHead().add(direction.incPos));
         if(this.isIntersecting(apple.getWorldPosition())){
             System.out.println("Ate apple!!");
@@ -74,7 +75,7 @@ public class Snake {
             texturePath = this.getHeadTexture();
         }
         Texture texture = this.textures.get(texturePath);
-        sb.draw(texture, getBodyPart(index).x * SCALE, getBodyPart(index).y * SCALE);
+        sb.draw(texture, getBodyPart(index).x, getBodyPart(index).y, 1, 1);
     }
 
     String getBodyTexture(int index){
