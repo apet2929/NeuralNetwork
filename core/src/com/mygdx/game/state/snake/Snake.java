@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-
-import java.awt.*;
 import java.util.*;
 
 import static com.mygdx.game.state.snake.SnakeGameState.SCALE;
@@ -18,36 +16,42 @@ public class Snake {
     Direction nextDirection;
 
     HashMap<String, Texture> textures;
+    Runnable onGameOver;
 
     public Snake() {
         length = 5;
         body = new Stack<>();
 
-        body.push(new Vector2(5, 2));
-        body.push(new Vector2(4, 2));
-        body.push(new Vector2(3, 2));
-        body.push(new Vector2(2, 2));
         body.push(new Vector2(1, 2));
+        body.push(new Vector2(2, 2));
+        body.push(new Vector2(3, 2));
+        body.push(new Vector2(4, 2));
+        body.push(new Vector2(5, 2));
         direction = Direction.RIGHT;
         nextDirection = Direction.RIGHT;
         initTextures();
     }
 
     public void update(Apple apple){
-
-//        if(this.direction != nextDirection){
-//            this.direction = nextDirection;
-//        }
-
-        body.push(getHead().add(direction.incPos));
-        if(this.isIntersecting(apple.getWorldPosition())){
+        assert this.onGameOver != null;
+        if(this.isIntersectingHead(apple.getWorldPosition())){
             System.out.println("Ate apple!!");
-            apple.collect();
+            apple.collect(this);
             this.length++;
         }
+        body.push(getHead().add(direction.incPos));
+
         if(body.size() > length){
             body.remove(0);
         }
+        if(this.isIntersectingExceptHead(this.getHead())){
+            this.onGameOver.run();
+        }
+        if(this.getHead().x >= SnakeGameState.GRID_SIZE || this.getHead().x < 0 || this.getHead().y >= SnakeGameState.GRID_SIZE || this.getHead().y < 0){
+            this.onGameOver.run();
+        }
+
+
     }
 
     public void render(SpriteBatch sb){
@@ -107,25 +111,6 @@ public class Snake {
     }
 
     String getHeadOrTailTexture(int index, int compareTo){
-        /*
-        DOWN -> LEFT
-
-        tail: (2, 4)
-        compareTo: (2, 3)
-        tail - compareTo = 0, 1 = UP
-        but instead its LEFT
-
-        head: (1, 3)
-        compareTo: (2, 3)
-        head - compareTO = -1, 0 = LEFT
-
-        x: -1 - 1
-        y: -1 - 1
-
-        tail - body = <0, 1> = tail above body = tail pointing down
-        tail - body = <1, 0> = tail to the right = tail point left
-         */
-
         Vector2 current = getBodyPart(index);
         Vector2 compare = getBodyPart(compareTo);
         Vector2 relation = current.sub(compare);
@@ -160,12 +145,24 @@ public class Snake {
         return !isIntersecting(newPos);
     }
 
+    boolean isIntersectingExceptHead(Vector2 point){
+        for (int i = 0; i < length - 2; i++) {
+            Vector2 bodyPart = this.body.get(i);
+            if(bodyPart.x == point.x && bodyPart.y == point.y) return true;
+        }
+        return false;
+    }
+
     boolean isIntersecting(Vector2 point){
         for (Vector2 b :
                 body) {
             if(b.x == point.x && b.y == point.y) return true;
         }
         return false;
+    }
+
+    boolean isIntersectingHead(Vector2 point){
+        return point.x == getHead().x && point.y == getHead().y;
     }
 
     Vector2 getHead(){
@@ -191,6 +188,10 @@ public class Snake {
         loadTexture("body_topright.png");
         loadTexture("body_bottomleft.png");
         loadTexture("body_bottomright.png");
+    }
+
+    public void setOnGameOver(Runnable onGameOver) {
+        this.onGameOver = onGameOver;
     }
 
     void loadTexture(String path){
