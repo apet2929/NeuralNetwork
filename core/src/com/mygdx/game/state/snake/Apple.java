@@ -10,20 +10,27 @@ import com.badlogic.gdx.math.Vector2;
 public class Apple extends Sprite{
     private Vector2 position;
 
-    public Apple() {
-        this(new Texture(Gdx.files.internal("apple.png")));
+    public Apple(Snake snake) {
+        this(new Texture(Gdx.files.internal("apple.png")), snake);
     }
 
-    private Apple(Texture texture){
+    private Apple(Texture texture, Snake snake){
         super(texture);
-        position = getNewPos();
+        position = getNewPos(snake);
     }
 
-    public void collect() {
-        this.position = getNewPos();
+    public void collect(Snake snake) {
+        this.position = getNewPos(snake);
     }
 
-    private Vector2 getNewPos(){
+    private Vector2 getNewPos(Snake snake){
+        while(true){
+            Vector2 newPos = tryGetNewPos();
+            if(!snake.isIntersecting(newPos)) return newPos;
+        }
+    }
+
+    private Vector2 tryGetNewPos(){
         int x = (int) (Math.random() * SnakeGameState.GRID_SIZE);
         int y = (int) (Math.random() * SnakeGameState.GRID_SIZE);
         return new Vector2(x, y);
